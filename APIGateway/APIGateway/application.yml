@@ -1,0 +1,23 @@
+server:
+  port: 8077
+
+spring:
+  application:
+    name: API-Gateway
+  cloud:
+    gateway:
+      routes:
+        - id: CUSTOMER-SERVICE
+          uri: http://localhost:8078
+          predicates:
+            - Path=/customer/**
+
+        - id: ACCOUNT-SERVICE
+          uri: http://localhost:8079
+          predicates:
+            - Path=/account/**
+
+
+
+
+
