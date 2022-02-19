@@ -1,10 +1,15 @@
 package com.example.Customer.Service;
 
 
+import com.example.Customer.Exception.CustomerAlreadyExistsException;
+import com.example.Customer.Exception.CustomerNotFoundException;
+import com.example.Customer.Feign.Feign;
+import com.example.Customer.Model.Account_Model;
 import com.example.Customer.Model.Customer_Model;
 import com.example.Customer.Repository.Customer_Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.Customer.Model.PutRequest;
 import java.util.*;
 
 @Service
@@ -13,37 +18,106 @@ public class Customer_Service  {
     @Autowired
     private Customer_Repository customer_repository;
 
-//    @Autowired
-//    private Customer_Model customer_model;
+    @Autowired
+    private Feign feign;
+
+
+
 
     public Customer_Model add(Customer_Model cus){
-        return customer_repository.save(cus);
-    }
+        Customer_Model customerModel = customer_repository.findById(cus.getCustomerId()).get();
+        if(customerModel==null){
+
+                Account_Model accountModel = feign.createAccount(cus.getAccountModel());
+
+
+
+                return customer_repository.save(cus);
+
+
+        }
+        else{
+            if(customerModel.getisactive()==true){
+                Account_Model accountModel= feign.createAccount(cus.getAccountModel());
+                return customer_repository.save(cus);
+            }
+            else{
+                throw new CustomerNotFoundException("Customer is already inactive,cannnot create account") ;
+            }
+
+
+            }
+        }
+
+
+
+
+
+
 
 
     public Customer_Model findById(Integer cust_id){
+        if(customer_repository.findById(cust_id).get()==null)
+            throw new CustomerNotFoundException("id doesnt exist");
         return customer_repository.findById(cust_id).get();
     }
 
 
     public List<Customer_Model> findAll(){
+        if(customer_repository.findAll().isEmpty())
+            throw new CustomerNotFoundException("No customer found for this id");
         return customer_repository.findAll();
     }
 
-//    public String delete(Integer cust_id){
-//        Customer_Model c = customer_repository.findById(cust_id).get();
-//        if(c.isIsactive()==true)
-//        {
-//            customer_repository.save(cust_id.setIsactive(false));
-//
-//            return "Customer ID succesfully deactivated";
-//
-//        }
-//
-//        else
-//            return "Customer ID is Already inactive";
-//
-//
-//
-//    }
+
+    public Customer_Model deleteCust(Integer id){
+        Customer_Model cus = findById(id);
+        if(cus.getisactive()==false)
+            throw new CustomerAlreadyExistsException("Customer is already inactive");
+        cus.setIsactive(false);
+        customer_repository.save(cus);
+        List<Account_Model> accountLists = (List<Account_Model>) feign.updateActive(id);
+        cus = findById(id);
+        return cus;
+    }
+
+    public Customer_Model updateLastName(PutRequest p){
+        Customer_Model cus = findById(p.getId());
+        cus.setCustomerLastName(p.getLastname());
+        customer_repository.save(cus);
+        return cus = findById(p.getId());
+
+    }
+
+    public Customer_Model updateMiddleName(PutRequest p){
+        Customer_Model cus = findById(p.getId());
+        cus.setCustomerMiddleName(p.getMiddlename());
+        customer_repository.save(cus);
+        return cus = findById(p.getId());
+
+    }
+
+    public Customer_Model updateAddress(PutRequest p){
+        Customer_Model cus = findById(p.getId());
+        cus.setAddress(p.getAddress());
+        customer_repository.save(cus);
+        return cus = findById(p.getId());
+
+    }
+
+    public Customer_Model updatePhone(PutRequest p){
+        Customer_Model cus = findById(p.getId());
+        cus.setPhonenumber(p.getPhone());
+        customer_repository.save(cus);
+        return cus = findById(p.getId());
+
+    }
+
+    public Customer_Model updateEmail(PutRequest p){
+        Customer_Model cus = findById(p.getId());
+        cus.setEmail(p.getEmail());
+        customer_repository.save(cus);
+        return cus = findById(p.getId());
+
+    }
 }

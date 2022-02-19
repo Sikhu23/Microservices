@@ -10,9 +10,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequiredResponse {
-    private Account_Model account_model;
+    private List<Account_Model> account_model;
     private Customer_Model customer_model;
 }
+
+
 
 
 
