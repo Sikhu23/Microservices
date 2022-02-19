@@ -25,8 +25,9 @@ public class Customer_Service  {
 
 
     public Customer_Model add(Customer_Model cus){
-        Customer_Model customerModel = customer_repository.findById(cus.getCustomerId()).get();
-        if(customerModel==null){
+        if( !customer_repository.findById(cus.getCustomerId()).isPresent()){
+//        Customer_Model customerModel = customer_repository.findById(cus.getCustomerId()).get();
+
 
                 Account_Model accountModel = feign.createAccount(cus.getAccountModel());
 
@@ -37,6 +38,7 @@ public class Customer_Service  {
 
         }
         else{
+            Customer_Model customerModel = customer_repository.findById(cus.getCustomerId()).get();
             if(customerModel.getisactive()==true){
                 Account_Model accountModel= feign.createAccount(cus.getAccountModel());
                 return customer_repository.save(cus);
