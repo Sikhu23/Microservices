@@ -51,15 +51,8 @@ public class Customer_Service  {
             }
         }
 
-
-
-
-
-
-
-
     public Customer_Model findById(Integer cust_id){
-        if(customer_repository.findById(cust_id).get()==null)
+        if(!customer_repository.findById(cust_id).isPresent())
             throw new CustomerNotFoundException("id doesnt exist");
         return customer_repository.findById(cust_id).get();
     }
@@ -71,18 +64,32 @@ public class Customer_Service  {
         return customer_repository.findAll();
     }
 
+//
+//    public Customer_Model deleteCust(Integer id){
+//        Customer_Model cus = customer_repository.findById(id).get();
+//
+//        if(cus.getisactive()==false)
+//            throw new CustomerAlreadyExistsException("Customer is already inactive");
+//        else {
+//            cus.setIsactive(false);
+//            customer_repository.save(cus);
+//            List<Account_Model> accountLists = (List<Account_Model>) feign.updateActive(id);
+//            cus = findById(id);
+//            return cus;
+//        }
+//    }
 
     public Customer_Model deleteCust(Integer id){
         Customer_Model cus = findById(id);
-        if(cus.getisactive()==false)
-            throw new CustomerAlreadyExistsException("Customer is already inactive");
+        if(cus.getisactive()==false) {
+            throw new CustomerNotFoundException("Customer is already inactive");
+        }
         cus.setIsactive(false);
         customer_repository.save(cus);
         List<Account_Model> accountLists = (List<Account_Model>) feign.updateActive(id);
         cus = findById(id);
         return cus;
     }
-
     public Customer_Model updateLastName(PutRequest p){
         Customer_Model cus = findById(p.getId());
         cus.setCustomerLastName(p.getLastname());
