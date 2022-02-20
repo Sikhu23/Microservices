@@ -60,7 +60,7 @@ public class Customer_Service  {
 
     public List<Customer_Model> findAll(){
         if(customer_repository.findAll().isEmpty())
-            throw new CustomerNotFoundException("No customer found for this id");
+            throw new CustomerAlreadyExistsException("No customer found for this id");
         return customer_repository.findAll();
     }
 
@@ -82,7 +82,7 @@ public class Customer_Service  {
     public Customer_Model deleteCust(Integer id){
         Customer_Model cus = findById(id);
         if(cus.getisactive()==false) {
-            throw new CustomerNotFoundException("Customer is already inactive");
+            throw new CustomerAlreadyExistsException("Customer is already inactive");
         }
         cus.setIsactive(false);
         customer_repository.save(cus);

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 class CustomerServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({CustomerNotFoundException.class})
+    @ExceptionHandler({CustomerNotFoundException.class,CustomerAlreadyExistsException.class})
     ResponseEntity customerNotFoundHandler(Exception exception, ServletWebRequest request){
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.NOT_FOUND);
@@ -30,6 +30,16 @@ class CustomerServiceExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setTimestamp(LocalDateTime.now());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
+//
+//    @ExceptionHandler({CustomerAlreadyExistsException.class})
+//    ResponseEntity customerAlreadyExistsExceptionHandler(Exception exception, ServletWebRequest request){
+//        ApiError apiError = new ApiError();
+//        apiError.setStatus(HttpStatus.NOT_FOUND);
+//        apiError.setErrors(Arrays.asList(exception.getMessage()));
+//        apiError.setPath(request.getDescription(false));
+//        apiError.setTimestamp(LocalDateTime.now());
+//        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+//    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
