@@ -54,14 +54,22 @@ public class Customer_Service  {
     public Customer_Model findById(Integer cust_id){
         if(!customer_repository.findById(cust_id).isPresent())
             throw new CustomerNotFoundException("id doesnt exist");
-        return customer_repository.findById(cust_id).get();
+        Customer_Model c= customer_repository.findById(cust_id).get();
+        c.setAccountModel(null);
+
+        return c;
     }
 
 
     public List<Customer_Model> findAll(){
         if(customer_repository.findAll().isEmpty())
             throw new CustomerAlreadyExistsException("No customer found for this id");
-        return customer_repository.findAll();
+        List<Customer_Model> c= customer_repository.findAll();
+        for(Customer_Model c1 : c){
+            c1.setAccountModel(null);
+        }
+        
+        return c;
     }
 
 //
