@@ -23,3 +23,6 @@ server:
        health:
          show-details: always
 
+feign:
+  circuitbreaker:
+    enabled: true

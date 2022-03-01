@@ -68,7 +68,7 @@ public class Customer_Service  {
         for(Customer_Model c1 : c){
             c1.setAccountModel(null);
         }
-        
+
         return c;
     }
 

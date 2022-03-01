@@ -1,6 +1,7 @@
 package com.example.Customer.Controller;
 
 
+import com.example.Customer.Exception.CustomHystrixException;
 import com.example.Customer.Feign.Feign;
 import com.example.Customer.Model.Account_Model;
 import com.example.Customer.Model.Customer_Model;
@@ -16,6 +17,8 @@ import com.example.Customer.Model.PutRequest;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/customer")
@@ -26,6 +29,7 @@ public class Customer_Controller {
 
 //    @Autowired
 //    private RestTemplate restTemplate;
+
 
     @Autowired
     Feign feign;
@@ -44,6 +48,7 @@ public class Customer_Controller {
 
     @GetMapping()
     public ResponseEntity <List<Customer_Model>> findAll(){
+//        logger.info("List of all customers");
         return new ResponseEntity<List<Customer_Model>>(customer_service.findAll(),HttpStatus.ACCEPTED);
     }
 
@@ -60,10 +65,18 @@ public class Customer_Controller {
 
 
         //Account_Model accountLists=  restTemplate.getForObject("http://ACCOUNT-SERVICE/account/id/"+id,Account_Model.class);
-        List<Account_Model> accountLists = feign.findIDS(id);
+        try {
+            List<Account_Model> accountLists = feign.findIDS(id);
+            requiredResponse.setAccount_model(accountLists);
+            return new ResponseEntity<RequiredResponse>(requiredResponse,HttpStatus.OK);
+        }
+        catch (Exception e){
+            requiredResponse.setAccount_model(null);
+            return new ResponseEntity<RequiredResponse>(requiredResponse,HttpStatus.OK);
 
-        requiredResponse.setAccount_model(accountLists);
-        return new ResponseEntity<RequiredResponse>(requiredResponse,HttpStatus.OK);
+        }
+
+
     }
 
 //
@@ -79,7 +92,7 @@ public class Customer_Controller {
     }
 
     @PatchMapping("/updateMiddleName")
-    public ResponseEntity<Customer_Model> updateMiddleName(@RequestBody PutRequest p){
+        public ResponseEntity<Customer_Model> updateMiddleName(@RequestBody PutRequest p){
         return new ResponseEntity<Customer_Model>(customer_service.updateMiddleName(p),HttpStatus.ACCEPTED);
     }
 

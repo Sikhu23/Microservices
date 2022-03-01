@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 class CustomerServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({CustomerNotFoundException.class,CustomerAlreadyExistsException.class})
+    @ExceptionHandler({CustomerNotFoundException.class,CustomerAlreadyExistsException.class,CustomHystrixException.class})
     ResponseEntity customerNotFoundHandler(Exception exception, ServletWebRequest request){
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.NOT_FOUND);
